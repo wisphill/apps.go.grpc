@@ -5,7 +5,6 @@ OUT_DIR=.
 
 PROJECT_DIR=$(CURDIR)
 
-
 .PHONY: proto
 
 proto:
