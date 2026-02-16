@@ -10,14 +10,14 @@ import (
 	"syscall"
 	"time"
 
+	"apps.go.grpc/internal/interceptors"
+	"apps.go.grpc/internal/service"
+	"apps.go.grpc/order-service/proto"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
-	grpc_middleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
-
-	"order-service/internal/interceptor"
-	pb "order-service/proto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 func main() {
@@ -26,12 +26,9 @@ func main() {
 
 	// --- Create gRPC server with middleware chain ---
 	grpcServer := grpc.NewServer(
-		grpc.UnaryInterceptor(
-			grpc_middleware.ChainUnaryServer(
-				interceptor.LoggingInterceptor(),
-				interceptor.AuthInterceptor(),
-				grpc_prometheus.UnaryServerInterceptor,
-			),
+		grpc.ChainUnaryInterceptor(
+			interceptors.AuthInterceptor(),
+			grpc_prometheus.UnaryServerInterceptor,
 		),
 	)
 
@@ -39,8 +36,8 @@ func main() {
 	grpc_prometheus.Register(grpcServer)
 
 	// --- Register your service ---
-	orderHandler := NewOrderHandler() // assume constructor exists
-	pb.RegisterOrderServiceServer(grpcServer, orderHandler)
+	orderService := service.NewOrderService() // assume constructor exists
+	proto.RegisterOrderServiceServer(grpcServer, orderService)
 
 	// Enable reflection (useful for grpcurl)
 	reflection.Register(grpcServer)
@@ -64,7 +61,7 @@ func main() {
 		Handler: http.DefaultServeMux,
 	}
 
-	http.Handle("/metrics", grpc_prometheus.Handler())
+	http.Handle("/metrics", promhttp.Handler())
 
 	go func() {
 		log.Printf("Metrics server running on port %s", metricsPort)
