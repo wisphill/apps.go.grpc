@@ -2,12 +2,12 @@ package service
 
 import (
 	"apps.go.grpc/internal/domain"
-	"apps.go.grpc/order-service/proto"
 	"github.com/google/uuid"
+	orderV1 "github.com/wisphill/apps.api.proto/gen/service/orders/v1"
 )
 
 type OrderService struct {
-	proto.UnimplementedOrderServiceServer
+	orderV1.UnimplementedOrderServiceServer
 }
 
 func NewOrderService() OrderService {

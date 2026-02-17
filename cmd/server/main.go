@@ -12,7 +12,7 @@ import (
 
 	"apps.go.grpc/internal/interceptors"
 	"apps.go.grpc/internal/service"
-	"apps.go.grpc/order-service/proto"
+	orderV1 "github.com/wisphill/apps.api.proto/gen/service/orders/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 
@@ -37,7 +37,7 @@ func main() {
 
 	// --- Register your service ---
 	orderService := service.NewOrderService() // assume constructor exists
-	proto.RegisterOrderServiceServer(grpcServer, orderService)
+	orderV1.RegisterOrderServiceServer(grpcServer, orderService)
 
 	// Enable reflection (useful for grpcurl)
 	reflection.Register(grpcServer)
