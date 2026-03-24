@@ -37,3 +37,15 @@ order-service/
 └── go.mod
 
 ```
+
+### Useful commands
+
+```
+grpcurl -plaintext localhost:50051 list
+grpcurl -plaintext \
+  -H "authorization: Bearer test-token" \
+  -d '{"userId":"1","amount":"200"}' \
+  localhost:50051 \
+  order.OrderService/CreateOrder
+
+```
